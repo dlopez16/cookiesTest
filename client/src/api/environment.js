@@ -1,0 +1,1 @@
+export const ORIGIN_URL = import.meta.env.PROD ? "" : "http://localhost:4800";
