@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+
+# practice files
+Home.jsx
+productsRoutes.js
+
