@@ -63,7 +63,7 @@ export default function Header(props) {
     return (
         <header>
             <Box sx={{ flexGrow: 1 }} />
-            <AppBar >
+            <AppBar sx={{ bgcolor: "green" }}>
                 <Toolbar>
                     <IconButton
                         size="large"
@@ -346,7 +346,7 @@ export default function Header(props) {
 //               edge="end"
 //               aria-label="account of current user"
 //               aria-controls={menuId}
-//               aria-haspopup="true"
+//              aria-haspopup="true"
 //               onClick={handleProfileMenuOpen}
 //               color="inherit"
 //             >
@@ -371,4 +371,3 @@ export default function Header(props) {
 //       {renderMenu}
 //     </Box>
 //   );
-// }

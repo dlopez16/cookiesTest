@@ -58,6 +58,28 @@ export default function SignIn() {
                 ></input>
                 <button>Sign In</button>
             </form>
+            <button onClick={async () => {
+                try {
+                    const response = await fetch("http://localhost:4800/signin", {
+                        method: "GET",
+                        headers: {
+                            credentials: "same-page",
+                            "Content-Type": "application/json",
+                            // "authorization": "Bearer " + token
+                        }
+                    })
+                    if (response.ok) {
+                        // response.json() will return a json of all the products on the server side
+                        response.json().then(res => {
+                            console.log(res)
+                        });
+                    } else {
+                        return Promise.reject(response);
+                    }
+                } catch (err) {
+                    console.log(err)
+                }
+            }}>Get</button>
         </div>
     )
 }
