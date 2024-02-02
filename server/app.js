@@ -11,27 +11,32 @@ require('dotenv').config();
 
 const User = require("./models/user")
 // const Product = require("./models/product")
-
-app.use(cookieParser());
 // const corsOptions = {
 //     origin: '*',
 //     credentials: true,
 //     optionSuccessStatus: 200,
 // }
 
+// app.use((req, res, next) => {
+//     res.header('Access-Control-Allow-Origin', '*');
+//     res.header('Acces-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+//     next();
+// });
 
 app.use(cors({
-    credentials: true
+    credentials: true,
+    origin: "http://localhost:5173"
 }));
 
 //needed to receive the request body json for the POSt request
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
 app.use(express.json())
 
 
 
-mongoose.connect("mongodb://localhost:27017/clothingStore")
+mongoose.connect("mongodb://localhost:27017/test")
     .then(() => {
         console.log("Connection Open!")
     })
@@ -64,6 +69,7 @@ app.delete("/logout", (req, res) => {
     //this will return an array without the req.body.token that was added there in the token route,  
     // essencially whould return a empty array deleting the refresh token
     refreshTokens = refreshTokens.filter(token => token !== req.body.token)
+    res.clearCookie('token', {});
     res.sendStatus(204);
     console.log(refreshTokens)
 })
@@ -109,8 +115,24 @@ app.post('/signin', async (req, res) => {
         // uses generateAccessToken function which accepts two attributes (userEmail, expiresIn)
         const accessToken = generateAccessToken(email, "1m")
         //creates a refresh token with a signanture, which takes the user email and the Refresh Token Secret
-        res.cookie("token", accessToken, { httpOnly: true, maxAge: 1000 * 60 })
+        res.cookie("token", accessToken, {
+            httpOnly: true,
+            maxAge: 1000 * 60 * 15,
+            secure: false,
+            signed: false
+        });
         const refreshToken = jwt.sign(email, process.env.REFRESH_TOKEN_SECRET)
+        res.cookie("refresh_token", refreshToken, {
+            httpOnly: true,
+            maxAge: 1000 * 60 * 60 * 24,
+            secure: false,
+            signed: false
+        });
+        user.refresh_tokens.push({
+            token: refreshToken,
+            expiration: new Date(date.now() + 1000 * 60 * 60 * 24)
+        });
+        await user.save();
         //this should be store in the db, right now is saved locally to test it
         refreshTokens.push(refreshToken)
         //responds with a status 200 and with a json with the accesstoken and refreshtoken
